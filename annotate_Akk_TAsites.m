@@ -41,7 +41,7 @@ for i=1:len %for all coordinates in results table
         siz(i)=loc(1);%assumes first coordinate =1
         pos(i) = c/siz(i);
         class(i) = {'intergenic'}; orient(i) = {'+'};
-    elseif c > loc(gidx,2) %is integenic?
+    elseif c > loc(gidx,2) %is intergenic
         if gidx==length(sq) %special case: insertion after last gene
             name1 = {sq(gidx).locus_tag}; name2 = {'--end'};
             name12 = [name1 name2];

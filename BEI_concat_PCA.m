@@ -1,5 +1,5 @@
 function BEI_concat_PCA(filterName,filterOn,norm_method,gbFile)
-%last edit: August-17-2020
+%last edit: August-29-2020
 %requires natsortfiles.m (Matlab file exchange)
     
 % Do PCA analysis on count-normalized data
@@ -123,7 +123,7 @@ end
 
 % Save workspace variables; filename is name of current directory
 dirName = pwd; 
-ind = strfind(dirName,'/');
+ind = strfind(dirName,filesep);
 dirName = dirName(ind(end)+1:end);
 save(dirName); 
 
@@ -221,7 +221,7 @@ for i = 1:length(gbkS)
         first, last, size, orientation, geneID, prot, descr];
     table = [table; itable];
 end
-genome_length = [adj + str2num(s.LocusSequenceLength)];
+genome_length = adj + str2double(s.LocusSequenceLength);
 
 %% Annotate PC insertion site list using annotation table
 coor = pc_top_load(:,1);
@@ -240,22 +240,22 @@ for i = 1:len %for all coordinates in results table
         geneID = {['pre_' name1]};
         siz = loc(1);%assumes first coordinate =1
         relPos = c/siz;
-        descr = table(1,10); %cell array
+        descr = {'n/a'}; %table(1,10); %cell array
         orientation = {'+'};
     elseif c > loc(gidx,2) && gidx==length(table)%insertion after last CDS
         name1 = cell2mat(table(gidx,8));
         geneID = {['post_' name1]};
         siz = genome_length-loc(gidx,2);
         relPos = (c-loc(gidx,2))/siz;
-        descr = table(gidx,10);
+        descr = {'n/a'}; %table(gidx,10);
         orientation = {'+'};
     elseif c > loc(gidx,2) && gidx~=length(table)%intergenic
         name1 = cell2mat(table(gidx,8));
         name2 = cell2mat(table(gidx+1,8));
-        geneID = {[name1 name2]};
+        geneID = {[name1 '_' name2]};
         siz = loc(gidx+1,1)-loc(gidx,2);
         relPos = (c-loc(gidx,2))/siz;
-        descr = {cell2mat([table(gidx,10),{'_'},table(gidx+1,10)])};
+        descr = {'n/a'}; %{cell2mat([table(gidx,10),{'_'},table(gidx+1,10)])};
         orientation = {'+'};
     else 
         %extract & store CDS info
@@ -270,7 +270,7 @@ for i = 1:len %for all coordinates in results table
         descr = table(gidx,10);
     end
     %consolidate output
-    gene_info(i,:) = [geneID {siz} {relPos} orientation descr];
+    gene_info(i,:) = [geneID {siz} orientation {relPos} descr];
 end
 
 %% Export table
@@ -283,11 +283,12 @@ input = num2cell(pc_top_load); %coordinates and coeff
 table_out = [pcs, input(:,2), input(:,1), gene_info];
 
 Tout = cell2table(table_out,'VariableNames',{'PC','Coeff',...
-    'TAsite','Gene','Size','Position','Orientation','Product'});
+    'TAsite','Gene','Size','Orientation','TnPosition','Product'});
 outName = strcat('PCloading-',dirName,'_',sitesName,'_',norm_method);
 writetable(Tout,outName,'FileType','text','Delimiter','tab');
 
 end
+
 %still ToDo:
     %use built in z-score ?
     %user-input for labeling sample groups ?

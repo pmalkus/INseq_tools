@@ -33,7 +33,7 @@ T=readtable(TAsites_file);
 TAsites=table2array(T(:,2));
 
 %Import all TAid from Genome_TAsitesID.txt file
-TAid_file=strcat(genome,'_TASitesID.txt');
+TAid_file=strcat(genome,'_TAsitesID.txt');
 T=readtable(TAid_file);
 TAid=table2cell(T(:,2));
 
