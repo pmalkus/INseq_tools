@@ -36,10 +36,10 @@ files=files(idx);
 tempName = 'tempFile.txt';
 idx=contains(files,filterName);
 filterFile=char(files(idx));
-files=files(~idx); %remove filterFile from file list
 copyfile(filterFile, tempName);
 clrtF = dlmread(tempName,'',0,1);
 filter = sort(clrtF(:,1));
+files=files(~idx); %remove filterFile from file list
 
 %% Consolidate sample names & read data into structure
 s = struct('sample',{},'data',[]);
