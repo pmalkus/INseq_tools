@@ -12,11 +12,10 @@ function [Control,Experiment] = goodman2artist(Input,Sample,TAsites)
 %OUTPUTS
   % <Control> = Total reads for Input sample
   % <Experiment> = Total reads for Test sample
-
-%Create <TAsites> from Genome_TAsites.txt file
-%TAsites_file=strcat(genome,'_TAsites.txt');
-%T=readtable(TAsites_file);
-%TAsites=table2array(T(:,2));
+  
+  
+%Alternatively, create <TAsites> from genome_TAsites.txt file
+%TAsites=dlmread(TAsites_file,'',0,1); %1 skips first column
 
 %Retrieve files
 files = dir('INSEQ*processed*'); %input list of file names in structure
