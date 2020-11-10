@@ -1,5 +1,7 @@
 function combine_readTables(mode,samples)
 %last edit: July-17-2020
+    % requires "natsortfiles.m"
+%e.g. >> combine_readTables('sum',{'tech-1','tech-2'})
 
 %Run from within current directory
 %Consolidates data from multiple read table files defined by user

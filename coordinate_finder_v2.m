@@ -1,23 +1,23 @@
 function out=coordinate_finder_v2(LRout,totReadThresh,coordinates)
-%last edit, July-04-2019
-%REQUIRES natsortfiles.m
+%last edit, Nov-11-2020 (annotation update)
+    % requires "natsortfiles.m"
+%e.g. >> myFavoriteSites = coordinate_finder_v2(1,10,[89587, 1459383])
 
-%OVERVIEW, version-2
-    % Load read tables from current directory into a structure
-        %can be used in Goodman 'results' directory, selects for readTables
-    % Calculate scaling factor for proportional normalization to CPM
-        % Omit coordinates w/ L/R > 1000, to remove phony read-suckers
-    % Apply user defined threshold for total read count
-    % Retrieve user defined coordinates and data
-    % Apply scaling factor
 %INPUTS
     % 'LRout' flag: 0==NO; 1==output L & R reads in data table (before Tot)
     % 'totReadThresh' is threshold for total reads, integer
-    % 'coordinates' vector of TN insertion coordinates   
-  % e.g. >> weirdo=coordinate_finder_v2(1,10,1459387)
+    % 'coordinates' vector of TN insertion coordinates (# in sq.brackets)
 %OUTPUT table (sorted by coordinate):
-    % sample / coordinate /         / Tot-read / normalized Tot-read (CPM)
-                   % / L-read / R-read /
+    % sample / coordinate / [L-read / R-read] / Tot-read / CPM
+
+% version-2, additional from v1
+    % Load read tables from current directory into a structure
+        %can be used in Goodman 'results' directory, selects for readTables
+    % Calculate scaling factor for proportional normalization to CPM
+        % For CPM, apply L/R filters (minLR=1, ratioLR > 1000)
+    % Retrieve user defined coordinates and data
+        % Apply user defined threshold for total read count
+        % Apply scaling factor
                    
 %% Consolidate sample names & read data into structure
 %input list of file names, held in structure
@@ -40,15 +40,14 @@ delete(tempName)
 
 %% Filter data, collect coordinates, build output
 out={}; %create cell array for output
-%Apply filterFile: keep coordinates of infile that are in filterFile
 for i=1:size(s,2)
     clrt=s(i).data;
     
-    %Filter & calculate scaling factor
+    %Calculate scaling factor (after noise filter)
     %remove rows with totRead < initial cutoff for total reads (=3)
     carCut = clrt(clrt(:,4) >= 3, :);
     %remove rows with L or R < cutoff (minLR)
-    minLR=1; cutRat=1000;
+    minLR=1; cutRat=1000; %junk filter
     carCut_noz = carCut((carCut(:,2)>=minLR),:);
     carCut_noz = carCut_noz((carCut_noz(:,3)>=minLR),:);
     %calculate ratio of L-to-R, apply cutoff (cutRat)
@@ -60,7 +59,7 @@ for i=1:size(s,2)
     tot=sum(ccnzr(:,4));
     norm2cpm=10^6/tot;
     
-    %Find coordinates & generate output
+    %Find coordinates & generate output (unfiltered)
     tf = ismember(clrt(:,1),coordinates);
     fclrt = clrt(tf,:);
     if LRout==1 %retrieve Land R read data
