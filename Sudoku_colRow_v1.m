@@ -7,9 +7,8 @@ function out=Sudoku_colRow_v1
     %Take coordinates with top read counts
         %for columns: 8 rows X 19 plates = 152 coordinates (estimate)
         %for columns: 8 rows X 19 plates = 228 coordinates (estimate)
-        %primitive: could be less, could be more; use read# equivalence
     %Build cell array: 21 columns x N rows; N= coordinates in filterFile
-        %col.1 = coordinates from filterFile
+        %col.1 = coordinates from filterFile (pre-screened Plate data)
         %col.2-13 = column data
         %col.14-21 = row data
 %INPUTS
