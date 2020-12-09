@@ -1,26 +1,46 @@
 function out = sudoku_plate_compare_v1(meanReplicatesLimit,meanReplicatesHist)
-%Last edit, Feb-26-2019
+%Last edit, Feb-26-2019 (annotations updated Dec-09-2020)
+%e.g. >> out = sudoku_plate_compare_v1(3,2)
 
 %Run from within current directory
 %Depends on proper naming convention of INPUT files!!! e.g.:
 %'INSEQ_experiment.scarf_Plate9.bowtiemap_processed.txt_Akkermansia_BAA835_rv'
 
-%Consolidates data for
-    %identifying unique TN insertion sites
-    
-%Generate 'replicates' varible for each coordinate
-    %First, WITHIN plates:
-        %find # unique per plate
-        %RANDOMLY assign remainder to plate coordinates
-    %Between plates, just add based on shared coordinates
+%INPUT:
+  % User-filtered read tables of Tn-insertion sites for each 96-well Plate
+     % Important to establish quality criteria for 'real' Tn-insertions
+  % <meanReplicatesLimit>, scalar
+     % Threshold to stop running optimization routine
+  % <meanReplicatesHist>, scalar
+     % Value of <meanReplicates> (see below) used to indentify a specific
+     % plate set for creating a histogram of <replicates>
+     
+%OUTPUT:
+  % Sequence of Plates optimized for low clonal redundancy
+  % <out> is a structure, each element holding information on a plate set
+    % e.g. out(4) is the set of 4 plates w/ lowest # of replicates
+    % out.plates holds Plate IDs from input file names
+    % out.data holds Tn-insertion sites and #replicates (intra & inter -plate)
+  % Fig-1: line plots showing trade-off between coverage & redundancy
+    % number of unique Tn-site VS number of plates in set
+    % number of replicates (mean) VS number of plates in set
+  % Fig-2: histogram of <replicates> for plate set = <meanReplicatesHist>
+  % Fig-3: count of <replicates> = 1, 2, 3 and 4 VS plate set size
+  
+%PROCESS:
+%Consolidate data for each Plate input table into structure
+%Generate 'replicates' varible for each Tn-insertion coordinate
+    %first, WITHIN plates:
+        %find # unique Tn-insertion per plate (X)
+        %randomly assign remainder (96-X) with replacement
+    %then, BETWEEN plates, add replcate number based on shared coordinate
 
 %Optimization routine:
-%  1. Find best plate based on mean(replicates) for plate (PlateS1)
-%  2. Find best plate to add to S1, to minimize mean(replicates)
-%    a. Create S_platePool
-%    b. Plot histogram of 'replicates' for S-platePool
-%  3. Repeat until mean(replicates)=X; X=3
-%Preserve information in structure???
+%  1. Find best plate based on lowest mean(replicates) == (Plate-S1)
+%  2. Sample all remaining plates to find best plate to combine with S1, 
+    % to generate a plate set that minimizes mean(replicates)
+%  3. Repeat until mean(replicates) for plate set = <meanReplicatesLimit> 
+%Information from each round preserved in output structure
 
 %% Consolidate plate data in a structure, generate 'replicates' variable
 files = dir('INSEQ*'); %input list of file names in structure
@@ -37,6 +57,7 @@ for i=1:length(files)
     delete(tempName)
     %Generate 'replicates' variable to assign for each coordinate
     replicates = ones(length(out),1);
+    %Sample from list of coordinates, w/replacement, to assign redundancy
     add = randsample(length(out),96-length(out),true);
     for j=1:length(add)
         replicates(add(j)) = replicates(add(j)) +1;
