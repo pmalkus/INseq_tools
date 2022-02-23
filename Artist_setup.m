@@ -1,6 +1,6 @@
 function Artist_setup(genome,inputName,sampleName,filterName)
 %last edit: April-22-2020
-%works
+%>> Artist_setup('Akk','GF7dinoc','CecumT1F1','BAPfeb19')
 
 % Parse all inputs and generate .mat file containing all workspace
     % variables needed for conditional gene analysis with ARTIST 
@@ -11,12 +11,11 @@ function Artist_setup(genome,inputName,sampleName,filterName)
         % coordinates in column-2, total reads in column-5
     % 'sampleName', filname: sample name for read table from Goodman pipeline
         % coordinates in column-2, total reads in column-5
-    % OPTIONAL: 'filterName', sample name for read table from Goodman pipeline
+    % ***OPTIONAL: 'filterName', sample name for read table from Goodman pipeline
         % used to filter sample data prior to filling missing TA sites
         % leave out of command to use input data table as is
+        % ***NOT REALLY: output and Artist_run EXPECT filtered variables 'my*'
         
-% >> Artist_setup('Akk','GF7dinoc','CecumT1F1','BAPfeb19')
-
 % OUTPUT
     % .mat file named by inputName_sampleName_filteName
     % contains workspace variables requirerd for ARTIST
